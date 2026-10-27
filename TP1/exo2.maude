@@ -1,0 +1,41 @@
+*** TP1 - Exercice 2
+
+*** 1.
+fmod SUM-CARRES is
+ protecting INT .
+ protecting BOOL .
+
+  op sumCarres : Int -> Int .
+  var N : Int .
+
+  eq sumCarres (0) = 0 .
+  eq sumCarres (N) = sumCarres( N - 1 ) + N * N .
+endfm
+
+reduce sumCarres(0) .
+reduce sumCarres(3) .
+reduce sumCarres(10) .
+
+*** 2.
+fmod PALINDROME is
+  protecting STRING .
+  protecting NAT .
+
+  op palindrome : String -> Bool .
+  var S : String .
+
+
+  ceq palindrome(S) = true
+    if length(S) < 2 .
+
+
+  ceq palindrome(S)
+    = (substr(S, 0, 1) == substr(S, sd(length(S), 1), 1))
+      and palindrome(substr(S, 1, sd(length(S), 2)))
+    if length(S) >= 2 .
+endfm
+
+reduce palindrome("") .          *** true
+reduce palindrome("a") .         *** true
+reduce palindrome("kayak") .     *** true
+reduce palindrome("abcd") .     *** true

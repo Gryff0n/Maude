@@ -1,0 +1,46 @@
+*** TP1 - Exercice 1 
+
+fmod MODULO5 is
+
+  sort Nat5 .
+  ops 0 1 2 3 4 : -> Nat5 [ctor] .
+  op _*_ : Nat5 Nat5 -> Nat5 [comm prec 31 gather (E e)] .
+  op _-_ : Nat5 Nat5 -> Nat5 [prec 33 gather (E e)] .
+  
+  var X : Nat5 .
+  
+  eq 0 * X = 0 .
+  eq 1 * X = X .
+  eq 2 * 2 = 4 .
+  eq 2 * 3 = 1 .
+  eq 2 * 4 = 3 .
+  eq 3 * 3 = 4 .
+  eq 3 * 4 = 2 .
+  eq 4 * 4 = 1 .
+  
+  eq X - 0 = X .
+  eq X - X = 0 .
+  eq 0 - 1 = 4 .
+  eq 0 - 2 = 3 .
+  eq 0 - 3 = 2 .
+  eq 0 - 4 = 1 .
+  eq 1 - 2 = 4 .
+  eq 1 - 3 = 3 .
+  eq 1 - 4 = 2 .
+  eq 2 - 1 = 1 .
+  eq 2 - 3 = 4 .
+  eq 2 - 4 = 3 .
+  eq 3 - 1 = 2 .
+  eq 3 - 2 = 1 .
+  eq 3 - 4 = 4 .
+  eq 4 - 1 = 3 .
+  eq 4 - 2 = 2 .
+  eq 4 - 3 = 1 .
+
+endfm
+
+reduce(2 * 0 * 0 * 0 * 0 * 0 - 2 * 0) .
+reduce(2 * 1 * 1 * 1 * 1 * 1 - 2 * 1) .
+reduce(2 * 2 * 2 * 2 * 2 * 2 - 2 * 2) .
+reduce(2 * 3 * 3 * 3 * 3 * 3 - 2 * 3) .
+reduce(2 * 4 * 4 * 4 * 4 * 4 - 2 * 4) .

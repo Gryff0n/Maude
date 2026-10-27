@@ -1,0 +1,81 @@
+*** TP1 - Exercice 3
+
+fmod BASIC-NAT is
+  sort Nat .
+
+  op 0 : -> Nat [ctor] .
+  op s_ : Nat -> Nat [ctor] .
+  op _+_ : Nat Nat -> Nat .
+  op max : Nat Nat -> Nat .
+
+  vars N M : Nat .
+  eq 0 + N = N .
+  eq s M + N = s(M + N) .
+  eq max(0, M) = M .
+  eq max(N, 0) = N .
+  eq max(s N, s M) = s max(N, M) .
+endfm
+
+fmod BASIC-NAT-SET is
+  protecting BASIC-NAT .
+  protecting BOOL .
+
+
+  sort NatSet .
+  subsort Nat < NatSet .
+
+  op empty-set : -> NatSet [ctor] .
+  op _;_ : NatSet NatSet -> NatSet [ctor assoc comm id: empty-set prec 41] .
+
+  vars N M : Nat .
+  vars S S' : NatSet .
+
+
+  eq N ; N = N .
+
+
+  op _in_ : Nat NatSet -> Bool [prec 51] .
+  eq N in (N ; S) = true .
+  eq N in S = false [owise] .
+
+
+  op delete : Nat NatSet -> NatSet .
+  eq delete(N, (N ; S)) = S .
+  eq delete(N, S) = S [owise] .
+
+
+  op inter : NatSet NatSet -> NatSet .
+  eq inter(empty-set, S') = empty-set .
+  ceq inter((N ; S), S') = N ; inter(S, S')
+    if N in S' .
+  ceq inter((N ; S), S') = inter(S, S')
+    if not (N in S') .
+
+
+  op differ : NatSet NatSet -> NatSet .
+  eq differ(empty-set, S') = empty-set .
+  ceq differ((N ; S), S') = differ(S, S')
+    if N in S' .
+  ceq differ((N ; S), S') = N ; differ(S, S')
+    if not (N in S') .
+endfm
+
+*** Tests de in
+reduce in TEST-BASIC-NAT-SET : two in (one ; two ; three) .    *** true
+reduce in TEST-BASIC-NAT-SET : four in (one ; two ; three) .   *** false
+reduce in TEST-BASIC-NAT-SET : one in empty-set .              *** false
+
+*** Tests de delete
+reduce in TEST-BASIC-NAT-SET : delete(two, (one ; two ; three)) .   *** one ; three
+reduce in TEST-BASIC-NAT-SET : delete(five, (one ; two ; three)) .  *** inchangé
+reduce in TEST-BASIC-NAT-SET : delete(one, empty-set) .             *** empty-set
+
+*** Tests de inter
+reduce in TEST-BASIC-NAT-SET : inter((one ; two ; three), (two ; three ; four)) .  *** two ; three
+reduce in TEST-BASIC-NAT-SET : inter((one ; two), (four ; five)) .                 *** empty-set
+reduce in TEST-BASIC-NAT-SET : inter(empty-set, (one ; two)) .                     *** empty-set
+
+*** Tests de differ
+reduce in TEST-BASIC-NAT-SET : differ((one ; two ; three), (two ; three ; four)) .  *** one
+reduce in TEST-BASIC-NAT-SET : differ((two ; three ; four), (one ; two ; three)) .  *** four
+reduce in TEST-BASIC-NAT-SET : differ((one ; two), (one ; two ; three)) .           *** empty-set
