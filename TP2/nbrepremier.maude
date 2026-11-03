@@ -1,0 +1,83 @@
+fmod NbrePremier is
+  including NAT .
+
+  sort NatList .
+  subsort Nat < NatList .
+
+  
+  op nil : -> NatList [ctor] .
+  
+  op _._ : NatList NatList -> NatList [ctor assoc id: nil strat(0)] .
+  
+  vars L L' : NatList .
+
+  op force : NatList NatList -> NatList [strat(1 2 0)] .
+  eq force(L, L') = L . L' .
+  
+  vars M N : Nat .
+
+  op show_upto_ : NatList Nat -> NatList .
+  eq show L upto 0 = nil .
+  eq show nil upto N = nil .
+  eq show (M . L) upto s N = force(M, show L upto N) .
+  
+  op filter_with_ : NatList Nat -> NatList .
+  eq filter nil with N = nil .
+  eq filter (M . L) with N =
+     if M rem N == 0
+       then filter L with N
+     else
+       M . filter L with N
+     fi .
+     
+     
+  op nats-from : Nat -> NatList .
+  eq nats-from(N) = N . nats-from(N + 1) .
+  
+  op nbrepremier : NatList -> NatList .
+  eq nbrepremier(nil) = nil .
+  eq nbrepremier(M . L) = M . nbrepremier(filter L with M) .
+  
+  op primes : -> NatList .
+  eq primes = nbrepremier(nats-from(2)) .
+  
+endfm
+
+*** ---------- Tests de _._ (concaténation) ----------
+reduce in NbrePremier : nil . 7 . nil .                 *** 7
+reduce in NbrePremier : 2 . 3 . 5 . nil .               *** 2 . 3 . 5
+
+*** ---------- Tests de force ----------
+reduce in NbrePremier : force(2 . 3, 5 . 7) .           *** 2 . 3 . 5 . 7
+reduce in NbrePremier : force(nil, 4) .                 *** 4
+reduce in NbrePremier : force(4, nil) .                 *** 4
+reduce in NbrePremier : force(nil, nil) .               *** nil
+
+*** ---------- Tests de show_upto_ ----------
+reduce in NbrePremier : show (2 . 3 . 5 . 7) upto 2 .   *** 2 . 3
+reduce in NbrePremier : show (2 . 3 . 5 . 7) upto 4 .   *** 2 . 3 . 5 . 7
+reduce in NbrePremier : show (2 . 3) upto 5 .           *** 2 . 3  (liste plus courte)
+reduce in NbrePremier : show (2 . 3) upto 0 .           *** nil
+reduce in NbrePremier : show nil upto 3 .               *** nil
+
+*** ---------- Tests de filter_with_ ----------
+reduce in NbrePremier : filter (2 . 3 . 4 . 5 . 6 . 7 . 8 . 9 . 10) with 2 .  *** 3 . 5 . 7 . 9
+reduce in NbrePremier : filter (3 . 5 . 7 . 9 . 11 . 12) with 3 .              *** 5 . 7 . 11
+reduce in NbrePremier : filter (4 . 5 . 6) with 7 .                            *** 4 . 5 . 6  (rien à retirer)
+reduce in NbrePremier : filter (4 . 8 . 12) with 4 .                           *** nil
+reduce in NbrePremier : filter nil with 2 .                                    *** nil
+
+*** ---------- Tests de nats-from ----------
+reduce in NbrePremier : nats-from(2) .                  *** 2 . nats-from(3)  (lazy)
+reduce in NbrePremier : show nats-from(2) upto 5 .      *** 2 . 3 . 4 . 5 . 6
+reduce in NbrePremier : show nats-from(0) upto 3 .      *** 0 . 1 . 2
+reduce in NbrePremier : show nats-from(7) upto 0 .      *** nil
+
+reduce in NbrePremier : show (filter (2 . 3 . 4 . 5 . 6 . 7 . 8 . 9 . 10) with 2) upto 10 .
+*** 3 . 5 . 7 . 9
+
+reduce in NbrePremier : show (filter nats-from(2) with 2) upto 5 .
+*** 3 . 5 . 7 . 9 . 11
+
+reduce in NbrePremier : show primes upto 10 .
+*** 2 . 3 . 5 . 7 . 11 . 13 . 17 . 19 . 23 . 29
